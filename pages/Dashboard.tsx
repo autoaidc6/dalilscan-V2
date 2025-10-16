@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useLog } from '../context/LogContext';
@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { CameraIcon, UploadIcon, FireIcon, WaterDropIcon, PlusIcon, ChallengeIcon } from '../components/icons/Icons';
-import ScanModal from '../components/ScanModal';
 import { getDailyChallenge } from '../gamification/challenges';
 
 // --- Memoized Card Components for Performance Optimization ---
@@ -151,7 +150,6 @@ const Dashboard = () => {
   const { t } = useI18n();
   const { user } = useUser();
   const navigate = useNavigate();
-  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
@@ -173,14 +171,6 @@ const Dashboard = () => {
   
   return (
     <>
-      <ScanModal 
-        isOpen={isScanModalOpen} 
-        onClose={() => setIsScanModalOpen(false)} 
-        onCapture={(imageSrc) => {
-          setIsScanModalOpen(false);
-          navigate('/scan', { state: { imageSrc } });
-        }}
-      />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -212,7 +202,7 @@ const Dashboard = () => {
               className="hidden"
               aria-hidden="true"
           />
-          <button onClick={() => setIsScanModalOpen(true)} className="flex-1 flex items-center justify-center space-x-3 rtl:space-x-reverse bg-brand-purple text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:bg-indigo-600 transition-all">
+          <button onClick={() => navigate('/scan')} className="flex-1 flex items-center justify-center space-x-3 rtl:space-x-reverse bg-brand-purple text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:bg-indigo-600 transition-all">
             <CameraIcon className="w-6 h-6" />
             <span>{t('scanFood')}</span>
           </button>
