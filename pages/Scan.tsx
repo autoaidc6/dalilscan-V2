@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -43,7 +42,21 @@ const Scan = () => {
         try {
             setCameraError(null);
             if (streamRef.current) stopCamera();
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            
+            const constraints: MediaStreamConstraints = {
+                video: { facingMode: 'environment' }
+            };
+
+            let stream: MediaStream;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (err) {
+                console.warn("Could not get environment camera, trying default", err);
+                // Fallback to any camera
+                const fallbackConstraints: MediaStreamConstraints = { video: true };
+                stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+            }
+      
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
