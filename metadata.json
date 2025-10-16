@@ -1,0 +1,7 @@
+{
+  "name": "DalilScan (دليل سكان)",
+  "description": "A bilingual AI nutrition tracking app that helps users snap a food photo, instantly analyze its nutrition (calories, macros, serving), and track daily goals in English or Arabic.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
