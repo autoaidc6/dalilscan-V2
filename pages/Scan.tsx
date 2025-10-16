@@ -43,29 +43,50 @@ const Scan = () => {
             setCameraError(null);
             if (streamRef.current) stopCamera();
             
-            const constraints: MediaStreamConstraints = {
-                video: { facingMode: 'environment' }
-            };
-
             let stream: MediaStream;
+            const environmentConstraints: MediaStreamConstraints = {
+                video: { facingMode: { exact: 'environment' } }
+            };
+    
             try {
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                // First, try to get the rear camera
+                stream = await navigator.mediaDevices.getUserMedia(environmentConstraints);
             } catch (err) {
-                console.warn("Could not get environment camera, trying default", err);
-                // Fallback to any camera
-                const fallbackConstraints: MediaStreamConstraints = { video: true };
-                stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                console.warn("Could not get environment camera, trying default.", err);
+    
+                if (err instanceof DOMException && (err.name === 'OverconstrainedError' || err.name === 'NotFoundError' || err.name === 'NotReadableError')) {
+                    // This is an expected failure on devices without a rear camera or if it's in use.
+                    // Fallback to any camera.
+                    const fallbackConstraints: MediaStreamConstraints = { video: true };
+                    stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                } else {
+                    // If the error was something else (like permission denied), re-throw it to be handled by the outer catch.
+                    throw err;
+                }
             }
-      
+    
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
             streamRef.current = stream;
+    
         } catch (err) {
-            console.error("Error accessing camera: ", err);
-            if (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
-                setCameraError(t('errorCameraPermissionDenied'));
+            console.error("Final error accessing camera: ", err);
+            if (err instanceof DOMException) {
+                switch (err.name) {
+                    case 'NotAllowedError':
+                    case 'PermissionDeniedError':
+                        setCameraError(t('errorCameraPermissionDenied'));
+                        break;
+                    case 'NotFoundError':
+                    case 'DevicesNotFoundError':
+                        setCameraError(t('errorCameraNotFound'));
+                        break;
+                    default:
+                        setCameraError(t('errorCameraGeneric'));
+                }
             } else {
+                // For other types of errors, e.g., regular Error object
                 setCameraError(t('errorCameraGeneric'));
             }
         }
@@ -185,14 +206,14 @@ const Scan = () => {
             <p className="text-gray-500 mb-8">{t('scanSubtitle')}</p>
 
             <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center">
-                <div className="w-full max-w-lg h-80 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-6 bg-gray-900 text-white overflow-hidden">
+                <div className="w-full max-w-lg h-80 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center mb-6 bg-brand-dark-purple text-white overflow-hidden">
                     {imageSrc ? (
                         <img src={imageSrc} alt="Meal to analyze" className="h-full w-full object-cover" loading="lazy" />
                     ) : cameraError ? (
                         <div className="text-center p-4">
-                            <CameraIcon className="w-16 h-16 mx-auto text-red-400 opacity-50 mb-4" />
-                            <p className="font-bold text-red-400">{t('errorCameraTitle')}</p>
-                            <p className="text-sm text-gray-300 mt-2 max-w-xs mx-auto">{cameraError}</p>
+                            <CameraIcon className="w-12 h-12 mx-auto text-red-300 mb-4" />
+                            <p className="font-bold text-red-300 mb-2">{t('errorCameraTitle')}</p>
+                            <p className="text-sm text-gray-400 max-w-xs mx-auto">{cameraError}</p>
                         </div>
                     ) : (
                         <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover" />
@@ -248,14 +269,14 @@ const Scan = () => {
                          <div className="flex gap-4">
                             <button
                                 onClick={() => navigate('/dashboard')}
-                                className="w-full bg-gray-100 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+                                className="w-full bg-white border border-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                                 {t('cancel')}
                             </button>
                             <button
                                 onClick={handleCapture}
                                 disabled={!!cameraError}
-                                className="w-full bg-gradient-to-r from-brand-purple to-indigo-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-brand-purple text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-600 transition-all disabled:bg-brand-light-purple disabled:text-brand-purple/70 disabled:cursor-not-allowed"
                             >
                                 {t('capture')}
                             </button>
