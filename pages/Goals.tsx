@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
 import { useUser } from '../context/UserContext';
+import { useToast } from '../context/ToastContext';
 import { TargetIcon } from '../components/icons/Icons';
 
 const Goals = () => {
   const { t } = useI18n();
   const { user, updateUser } = useUser();
+  const { showToast } = useToast();
 
+  // Local state for form inputs, initialized from user context
   const [goals, setGoals] = useState({
     calorieGoal: user.calorieGoal,
     proteinGoal: user.proteinGoal,
@@ -20,8 +23,7 @@ const Goals = () => {
     activityLevel: user.activityLevel,
   });
 
-  // This effect syncs the local state with the user context.
-  // This is useful if the user data is changed elsewhere in the app.
+  // This effect syncs the local state if the user context changes from another source
   useEffect(() => {
     setGoals({
       calorieGoal: user.calorieGoal,
@@ -41,13 +43,19 @@ const Goals = () => {
     const { name, value } = e.target;
     setGoals(prevGoals => ({
       ...prevGoals,
-      [name]: e.target.type === 'number' ? Number(value) : value,
+      // Ensure numeric inputs are stored as numbers
+      [name]: e.target.type === 'number' && value !== '' ? Number(value) : value,
     }));
   };
 
   const handleSave = () => {
-    updateUser(goals);
-    // Maybe show a success message
+    try {
+      updateUser(goals);
+      showToast(t('goalsSaved'), 'success');
+    } catch (error) {
+      showToast(t('saveError'), 'error');
+      console.error("Failed to save goals:", error);
+    }
   };
 
   return (

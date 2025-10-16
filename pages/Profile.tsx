@@ -1,23 +1,37 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
+import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
     const { t, changeLanguage, language } = useI18n();
     const { user, updateUser } = useUser();
+    const { logout } = useAuth();
+    const { showToast } = useToast();
+    const navigate = useNavigate();
+
     const [name, setName] = useState(user.name);
     const [goal, setGoal] = useState(user.calorieGoal);
-    const [isSaved, setIsSaved] = useState(false);
 
     const handleLanguageChange = (lang: 'en' | 'ar') => {
         changeLanguage(lang);
     };
 
     const handleSave = () => {
-        updateUser({ name, calorieGoal: goal });
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 2000); // Hide message after 2 seconds
+        try {
+            updateUser({ name, calorieGoal: goal });
+            showToast(t('profileSaved'), 'success');
+        } catch (error) {
+            showToast(t('saveError'), 'error');
+        }
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
     };
 
     return (
@@ -52,8 +66,7 @@ const Profile = () => {
                 >
                     {t('saveChanges')}
                 </button>
-                {isSaved && <p className="text-green-500 text-center mt-4">{t('profileSaved')}</p>}
-
+               
                 <div className="mt-8 border-t pt-6 border-gray-200">
                     <p className="font-semibold text-center text-gray-700 mb-4">{t('selectLanguage')}</p>
                     <div className="flex justify-center space-x-4 rtl:space-x-reverse">
@@ -80,6 +93,14 @@ const Profile = () => {
                     </div>
                 </div>
 
+                 <div className="mt-8 border-t pt-6 border-gray-200">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                    >
+                        {t('logout')}
+                    </button>
+                </div>
             </div>
         </motion.div>
     );

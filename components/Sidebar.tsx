@@ -1,12 +1,23 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useI18n } from '../context/I18nContext';
 import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 import { CameraIcon, HistoryIcon, TargetIcon, ProfileIcon, GlobeIcon, LogoIcon } from './icons/Icons';
+
+// Simple Logout Icon
+const LogoutIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+    </svg>
+);
+
 
 const Sidebar = () => {
   const { t, changeLanguage, language } = useI18n();
   const { user } = useUser();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const navItems = [
     { path: '/dashboard', label: t('navScan'), icon: CameraIcon },
@@ -18,6 +29,11 @@ const Sidebar = () => {
   const handleLanguageToggle = () => {
     const newLang = language === 'en' ? 'ar' : 'en';
     changeLanguage(newLang);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const navLinkClasses = 'flex items-center space-x-4 rtl:space-x-reverse px-4 py-3 text-gray-500 rounded-lg hover:bg-brand-light-purple hover:text-brand-purple transition-colors duration-200';
@@ -35,7 +51,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <nav className="flex-grow">
+      <nav>
         <ul>
           {navItems.map(({ path, label, icon: Icon }) => (
             <li key={path} className="mb-2">
@@ -49,16 +65,20 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-
-        <button onClick={handleLanguageToggle} className={`${navLinkClasses} w-full mt-4`}>
+      </nav>
+      
+      <div className="mt-auto pt-6 border-t border-gray-200">
+        <button onClick={handleLanguageToggle} className={`${navLinkClasses} w-full mb-4`}>
             <GlobeIcon className="w-6 h-6" />
             <span className="text-sm font-medium">{language === 'en' ? 'العربية' : 'English'}</span>
         </button>
 
-      </nav>
+        <button onClick={handleLogout} className={`${navLinkClasses} w-full text-red-500 hover:bg-red-50 hover:text-red-600`}>
+            <LogoutIcon className="w-6 h-6" />
+            <span className="text-sm font-medium">{t('logout')}</span>
+        </button>
 
-      <div className="mt-auto">
-        <div className="flex items-center space-x-3 rtl:space-x-reverse">
+        <div className="mt-6 flex items-center space-x-3 rtl:space-x-reverse">
           <div className="w-10 h-10 rounded-full bg-pink-200 text-pink-700 flex items-center justify-center font-bold">
             {user.avatarInitial}
           </div>

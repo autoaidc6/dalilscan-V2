@@ -10,6 +10,8 @@ const enTranslations = {
   selectLanguage: "Select your language",
   signInWithGoogle: "Sign in with Google",
   continue: "Continue as Guest",
+  logout: "Logout",
+  guestName: "Guest",
   navDashboard: "Dashboard",
   navScan: "Scan Food",
   navHistory: "History",
@@ -61,6 +63,8 @@ const enTranslations = {
   calorieGoal: "Daily Calorie Goal",
   saveChanges: "Save Changes",
   profileSaved: "Profile saved successfully!",
+  goalsSaved: "Goals saved successfully!",
+  saveError: "Could not save. Please try again.",
   calories: "Calories",
   nutritionGoalsTitle: "Nutrition Goals",
   nutritionGoalsSubtitle: "Set your daily targets",
@@ -80,6 +84,7 @@ const enTranslations = {
   activityLevelActive: "Active",
   activityLevelVeryActive: "Very Active",
   saveGoals: "Save Goals",
+  editMeal: "Edit Meal",
 };
 
 const arTranslations = {
@@ -90,6 +95,8 @@ const arTranslations = {
   selectLanguage: "اختر لغتك",
   signInWithGoogle: "تسجيل الدخول باستخدام جوجل",
   continue: "المتابعة كضيف",
+  logout: "تسجيل الخروج",
+  guestName: "ضيف",
   navDashboard: "الرئيسية",
   navScan: "مسح الطعام",
   navHistory: "السجل",
@@ -116,7 +123,7 @@ const arTranslations = {
   analyzing: "جاري التحليل...",
   logMeal: "تسجيل الوجبة",
   errorNoImage: "يرجى التقاط صورة أولاً.",
-  errorAnalysis: "عذرًا، لم أتمكن من تحليل هذه الصورة. يرجى تجربة صورة أخرى.",
+  errorAnalysis: "عذرًا، لم أتمكن من تحليل هذه الصورة. يجربة صورة أخرى.",
   errorCamera: "تعذر الوصول إلى الكاميرا. يرجى التحقق من الأذونات.",
   errorCameraPermissionDenied: "تم رفض الوصول إلى الكاميرا. يرجى الانتقال إلى إعدادات متصفحك والسماح بالوصول إلى الكاميرا لهذا الموقع.",
   errorCameraGeneric: "حدث خطأ غير متوقع أثناء الوصول إلى الكاميرا. الرجاء المحاولة مرة أخرى.",
@@ -141,6 +148,8 @@ const arTranslations = {
   calorieGoal: "هدف السعرات الحرارية اليومي",
   saveChanges: "حفظ التغييرات",
   profileSaved: "تم حفظ الملف الشخصي بنجاح!",
+  goalsSaved: "تم حفظ الأهداف بنجاح!",
+  saveError: "تعذر الحفظ. يرجى المحاولة مرة أخرى.",
   calories: "سعرات حرارية",
   nutritionGoalsTitle: "الأهداف الغذائية",
   nutritionGoalsSubtitle: "حدد أهدافك اليومية",
@@ -160,6 +169,7 @@ const arTranslations = {
   activityLevelActive: "نشيط (تمرين 6-7 أيام/أسبوع)",
   activityLevelVeryActive: "نشيط جداً (تمرين شاق وعمل بدني)",
   saveGoals: "حفظ الأهداف",
+  editMeal: "تعديل الوجبة",
 };
 
 
@@ -181,17 +191,27 @@ const resources = {
 };
 
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const detectedLang = localStorage.getItem('i18nextLng') || navigator.language;
-  const initialLang = detectedLang.startsWith('ar') ? 'ar' : 'en';
-  const [language, setLanguage] = useState<Language>(initialLang);
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const storedLang = localStorage.getItem('dalilscan-lang');
+      if (storedLang === 'ar' || storedLang === 'en') {
+        return storedLang;
+      }
+    } catch (e) { console.error(e); }
+    const detectedLang = navigator.language;
+    return detectedLang.startsWith('ar') ? 'ar' : 'en';
+  });
 
   const changeLanguage = useCallback((lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('i18nextLng', lang);
+    try {
+      localStorage.setItem('dalilscan-lang', lang);
+    } catch (e) { console.error(e); }
   }, []);
 
   const t = useCallback((key: string, options?: { [key: string]: string | number }): string => {
-    let translation = resources[language].translation[key as keyof typeof enTranslations] || key;
+    const translationKey = key as keyof typeof enTranslations;
+    let translation = (resources[language]?.translation?.[translationKey]) || key;
     if (options) {
       Object.keys(options).forEach(optKey => {
         translation = translation.replace(`{${optKey}}`, String(options[optKey]));

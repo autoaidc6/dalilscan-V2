@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
+import { useAuth } from '../context/AuthContext';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { t, changeLanguage, language } = useI18n();
+  const { isAuthenticated, login } = useAuth();
+
+  // If the user is already authenticated, redirect them to the dashboard.
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLanguageChange = (lang: 'en' | 'ar') => {
     changeLanguage(lang);
   };
+
+  const handleContinueAsGuest = () => {
+    login();
+    navigate('/dashboard');
+  }
+
+  // Prevent rendering the page content if we're about to redirect
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <motion.div
@@ -70,7 +89,7 @@ const Onboarding = () => {
           </div>
         </div>
 
-        <button className="w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white font-semibold py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center">
+        <button className="w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white font-semibold py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center opacity-50 cursor-not-allowed" disabled>
           <svg className="w-6 h-6 mr-3 rtl:ml-3 rtl:mr-0" viewBox="0 0 48 48">
             <path fill="#FFC107" d="M43.611 20.083H42V20h2v-2h-2v-2h-2v2h-2v2h2v2h-2v2h2v-2h2v-2h-2v-2h-2v2h2v2zM24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
             <path fill="#FF3D00" d="M6.306 14.691l6.522 5.025C14.381 15.317 18.798 12 24 12c3.059 0 5.842.979 8.17 2.639l6.19-5.238C34.86 6.81 29.692 4 24 4 16.227 4 9.505 8.444 6.306 14.691z" />
@@ -81,7 +100,7 @@ const Onboarding = () => {
         </button>
 
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={handleContinueAsGuest}
           className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all"
         >
           {t('continue')}

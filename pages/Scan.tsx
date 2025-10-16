@@ -3,17 +3,26 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useLog } from '../context/LogContext';
-import { Meal } from '../types';
+import { Meal, MealCategory } from '../types';
 import { useI18n } from '../context/I18nContext';
+import { useToast } from '../context/ToastContext';
+
+const getMealType = (timestamp: Date): MealCategory => {
+    const hour = timestamp.getHours();
+    if (hour >= 5 && hour < 11) return 'Breakfast';
+    if (hour >= 11 && hour < 16) return 'Lunch';
+    if (hour >= 16 && hour < 22) return 'Dinner';
+    return 'Snack';
+};
 
 const Scan = () => {
     const { t } = useI18n();
     const { addMeal } = useLog();
+    const { showToast } = useToast();
     const location = useLocation();
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<Meal | null>(null);
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     
@@ -22,6 +31,7 @@ const Scan = () => {
             setImageSrc(location.state.imageSrc);
         } else {
             // If no image is passed, redirect back to dashboard.
+            // This prevents users from landing here directly.
             navigate('/dashboard');
         }
     }, [location.state, navigate]);
@@ -36,12 +46,11 @@ const Scan = () => {
 
     const analyzeImage = async () => {
         if (!imageSrc) {
-            setError(t('errorNoImage'));
+            showToast(t('errorNoImage'), 'error');
             return;
         }
 
         setIsLoading(true);
-        setError(null);
         setAnalysisResult(null);
 
         try {
@@ -52,7 +61,7 @@ const Scan = () => {
                 model: "gemini-2.5-flash",
                 contents: {
                     parts: [
-                        { text: "Analyze the food item in this image. Provide its name, and estimated nutritional information (calories, protein, carbs, fat) in grams. Your response MUST be in JSON." },
+                        { text: "Analyze the food item in this image. Provide its name, and estimated nutritional information (calories, protein, carbs, fat) in grams for a single serving. Your response MUST be in JSON." },
                         imagePart
                     ]
                 },
@@ -74,22 +83,25 @@ const Scan = () => {
             
             const resultText = response.text;
             const parsedResult = JSON.parse(resultText);
+            const mealTimestamp = new Date();
 
             const mealData: Meal = {
+                type: 'Meal',
                 id: new Date().toISOString(),
                 name: parsedResult.name,
                 calories: parsedResult.calories,
                 protein: parsedResult.protein,
                 carbs: parsedResult.carbs,
                 fat: parsedResult.fat,
-                timestamp: new Date(),
+                timestamp: mealTimestamp,
                 image: imageSrc,
+                mealType: getMealType(mealTimestamp),
             };
             setAnalysisResult(mealData);
 
         } catch (e) {
             console.error(e);
-            setError(t('errorAnalysis'));
+            showToast(t('errorAnalysis'), 'error');
         } finally {
             setIsLoading(false);
         }
@@ -107,7 +119,7 @@ const Scan = () => {
     }
 
     if (!imageSrc) {
-        return null; // Or a loading spinner while redirecting
+        return null; // Render nothing while redirecting
     }
 
     return (
@@ -117,7 +129,7 @@ const Scan = () => {
 
             <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center">
                 <div className="w-full max-w-lg h-80 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-6 bg-gray-900 text-white overflow-hidden">
-                    <img src={imageSrc} alt="Meal to analyze" className="h-full w-full object-cover" />
+                    <img src={imageSrc} alt="Meal to analyze" className="h-full w-full object-cover" loading="lazy" />
                 </div>
 
                 <div className="w-full max-w-lg">
@@ -140,10 +152,12 @@ const Scan = () => {
                     )}
                 </div>
 
-                {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-
                 {analysisResult && (
-                    <div className="w-full max-w-lg mt-6 text-left rtl:text-right animate-fade-in">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full max-w-lg mt-6 text-left rtl:text-right"
+                    >
                         <h3 className="text-2xl font-bold mb-2 text-brand-dark-purple">{analysisResult.name}</h3>
                         <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-brand-text">
                             <p><strong>{t('calories')}:</strong> {analysisResult.calories.toFixed(0)}</p>
@@ -165,7 +179,7 @@ const Scan = () => {
                                 {t('logMeal')}
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
             </div>
         </motion.div>

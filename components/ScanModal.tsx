@@ -67,9 +67,9 @@ const ScanModal: React.FC<ScanModalProps> = ({ isOpen, onClose, onCapture }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="scan-modal-title">
       <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
-        <h3 className="text-xl font-bold text-brand-dark-purple mb-4 text-center">{t('takePicture')}</h3>
+        <h3 id="scan-modal-title" className="text-xl font-bold text-brand-dark-purple mb-4 text-center">{t('takePicture')}</h3>
         <div className="w-full h-80 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-6 bg-gray-900 overflow-hidden text-white p-4">
           {cameraError ? (
              <div className="text-center">

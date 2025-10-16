@@ -1,0 +1,26 @@
+{
+  "short_name": "DalilScan",
+  "name": "DalilScan | AI Nutrition Guide",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#5A4FCF",
+  "background_color": "#ffffff",
+  "description": "A bilingual AI nutrition tracking app that helps users snap a food photo, instantly analyze its nutrition, and track daily goals in English or Arabic."
+}
