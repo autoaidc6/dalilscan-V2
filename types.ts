@@ -22,3 +22,19 @@ export interface WaterLog {
 }
 
 export type LogEntry = Meal | WaterLog;
+
+export interface Badge {
+  id: string;
+  nameKey: string;
+  descriptionKey: string;
+  icon: string; // Name of the icon component
+}
+
+export type ChallengeMetric = 'calories' | 'water' | 'meals';
+
+export interface Challenge {
+  id: string;
+  titleKey: string;
+  metric: ChallengeMetric;
+  goal: number;
+}

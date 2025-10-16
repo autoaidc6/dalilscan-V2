@@ -13,6 +13,10 @@ interface User {
   age: number;
   activityLevel: string;
   avatarInitial: string;
+  streak: number;
+  lastLogDate: string | null;
+  earnedBadges: string[];
+  points: number;
 }
 
 interface UserContextType {
@@ -36,6 +40,10 @@ const initialUser: User = {
   age: 30,
   activityLevel: 'moderate',
   avatarInitial: 'G',
+  streak: 0,
+  lastLogDate: null,
+  earnedBadges: [],
+  points: 0,
 };
 
 // Helper function to safely parse the avatar initial
@@ -49,7 +57,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const parsedUser = JSON.parse(storedUser);
         // Ensure avatar initial is correctly set on load
         parsedUser.avatarInitial = getAvatarInitial(parsedUser.name);
-        return parsedUser;
+        // ensure gamification fields exist
+        return { ...initialUser, ...parsedUser };
       }
     } catch (error) {
       console.error("Failed to parse user from localStorage", error);

@@ -17,6 +17,7 @@ const Scan = lazy(() => import('./pages/Scan'));
 const History = lazy(() => import('./pages/History'));
 const Goals = lazy(() => import('./pages/Goals'));
 const Profile = lazy(() => import('./pages/Profile'));
+const Insights = lazy(() => import('./pages/Insights'));
 
 // A component to protect routes that require authentication
 // FIX: Changed children type to JSX.Element for better type inference with lazy components.
@@ -55,6 +56,7 @@ const AppContent = () => {
                             <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
                             <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
                             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                            <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                             <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
                         </Routes>
                     </AnimatePresence>
@@ -80,19 +82,19 @@ const App = () => {
   return (
     <Suspense fallback={<div className="w-full h-screen flex items-center justify-center bg-gray-100 text-lg font-semibold">Loading DalilScan...</div>}>
       <I18nProvider>
-        <UserProvider>
-          <LogProvider>
-            <AuthProvider>
-              <ToastProvider>
-                <HashRouter>
-                    <LanguageEffect />
-                    <AppContent />
-                    <Toast />
-                </HashRouter>
-              </ToastProvider>
-            </AuthProvider>
-          </LogProvider>
-        </UserProvider>
+        <ToastProvider>
+          <UserProvider>
+            <LogProvider>
+              <AuthProvider>
+                  <HashRouter>
+                      <LanguageEffect />
+                      <AppContent />
+                      <Toast />
+                  </HashRouter>
+              </AuthProvider>
+            </LogProvider>
+          </UserProvider>
+        </ToastProvider>
       </I18nProvider>
     </Suspense>
   );

@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useI18n } from '../context/I18nContext';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
-import { CameraIcon, HistoryIcon, TargetIcon, ProfileIcon, GlobeIcon, LogoIcon } from './icons/Icons';
+import { CameraIcon, HistoryIcon, TargetIcon, ProfileIcon, GlobeIcon, LogoIcon, ChartBarIcon } from './icons/Icons';
 
 // Simple Logout Icon
 const LogoutIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -23,6 +23,7 @@ const Sidebar = () => {
     { path: '/dashboard', label: t('navScan'), icon: CameraIcon },
     { path: '/history', label: t('navHistory'), icon: HistoryIcon },
     { path: '/goals', label: t('navGoals'), icon: TargetIcon },
+    { path: '/insights', label: t('navInsights'), icon: ChartBarIcon },
     { path: '/profile', label: t('navProfile'), icon: ProfileIcon },
   ];
 

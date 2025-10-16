@@ -6,8 +6,9 @@ import { useLog } from '../context/LogContext';
 import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { CameraIcon, UploadIcon, FireIcon, WaterDropIcon, PlusIcon } from '../components/icons/Icons';
+import { CameraIcon, UploadIcon, FireIcon, WaterDropIcon, PlusIcon, TargetIcon } from '../components/icons/Icons';
 import ScanModal from '../components/ScanModal';
+import { getDailyChallenge } from '../gamification/challenges';
 
 // --- Memoized Card Components for Performance Optimization ---
 
@@ -101,9 +102,53 @@ const WaterIntakeCard = React.memo(() => {
     );
 });
 
+const DailyChallengeCard = React.memo(() => {
+    const { t } = useI18n();
+    const { logEntries, totalCaloriesToday, totalWaterToday } = useLog();
+    const { user } = useUser();
+    const challenge = getDailyChallenge();
+
+    const { progress, progressText, isCompleted } = useMemo(() => {
+        let current = 0;
+        switch(challenge.metric) {
+            case 'water':
+                current = totalWaterToday;
+                break;
+            case 'calories':
+                current = totalCaloriesToday;
+                break;
+            case 'meals':
+                 current = logEntries.filter(e => e.type === 'Meal' && e.timestamp.toDateString() === new Date().toDateString()).length;
+                 break;
+        }
+
+        const isCompleted = challenge.metric === 'calories' ? current < challenge.goal && current > 0 : current >= challenge.goal;
+        const progress = Math.min((current / challenge.goal) * 100, 100);
+
+        const progressText = challenge.metric === 'calories' ? `${Math.round(current)} / < ${challenge.goal}` : `${Math.round(current)} / ${challenge.goal}`;
+
+        return { progress, progressText, isCompleted };
+
+    }, [challenge, logEntries, totalCaloriesToday, totalWaterToday]);
+
+    return (
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
+                <TargetIcon className="w-6 h-6 text-brand-purple" />
+                <h3 className="font-bold text-lg text-brand-dark-purple">{t('dailyChallenge')}</h3>
+            </div>
+            <p className={`font-semibold mb-2 ${isCompleted ? 'text-green-600' : 'text-gray-700'}`}>{t(challenge.titleKey, { goal: challenge.goal })}</p>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                 <div className={`${isCompleted ? 'bg-green-500' : 'bg-brand-purple'} h-2.5 rounded-full transition-all duration-500`} style={{ width: `${progress}%` }}></div>
+            </div>
+            <p className="text-xs text-right text-gray-500">{progressText}</p>
+        </div>
+    );
+});
 
 const Dashboard = () => {
   const { t } = useI18n();
+  const { user } = useUser();
   const navigate = useNavigate();
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -141,8 +186,19 @@ const Dashboard = () => {
         exit={{ opacity: 0 }}
         className="p-8 bg-gradient-to-br from-indigo-50/50 via-white to-emerald-50/50 min-h-screen"
       >
-        <header className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-brand-dark-purple mb-2">{t('scanYourFoodTitle')}</h1>
+        <header className="mb-10">
+            <div className="flex justify-between items-center mb-2">
+                <h1 className="text-4xl font-bold text-brand-dark-purple">{t('dashboardWelcome', { name: user.name })}</h1>
+                <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-orange-500 font-bold">
+                        <FireIcon className="w-6 h-6" />
+                        <span>{user.streak} {t('dayStreak')}</span>
+                    </div>
+                     <div className="text-sm font-bold text-brand-purple bg-brand-light-purple px-3 py-1 rounded-full">
+                        {user.points} {t('points')}
+                    </div>
+                </div>
+            </div>
           <p className="text-gray-500">{t('scanYourFoodSubtitle')}</p>
         </header>
 
@@ -166,10 +222,15 @@ const Dashboard = () => {
 
         <div>
           <h2 className="text-2xl font-bold text-brand-dark-purple mb-6">{t('todaysSummary')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DailyCaloriesCard />
-            <MacroDistributionCard />
-            <WaterIntakeCard />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <DailyChallengeCard />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <MacroDistributionCard />
+                 <WaterIntakeCard />
+            </div>
+            <div className="md:col-span-2 lg:col-span-2">
+                <DailyCaloriesCard />
+            </div>
           </div>
         </div>
       </motion.div>
