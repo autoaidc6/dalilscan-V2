@@ -1,8 +1,9 @@
-import React, { useEffect, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense, lazy, useState } from 'react';
 import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import { UserProvider } from './context/UserContext';
 import { LogProvider } from './context/LogContext';
 import { I18nProvider, useI18n } from './context/I18nContext';
@@ -39,15 +40,29 @@ const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
 const AppContent = () => {
     const location = useLocation();
     const { isAuthenticated } = useAuth();
+    const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     
-    // Show sidebar only on protected routes
-    const showSidebar = isAuthenticated && location.pathname !== '/';
+    // Close sidebar on route change
+    useEffect(() => {
+        setMobileSidebarOpen(false);
+    }, [location.pathname]);
+    
+    // Show sidebar and header only on protected routes
+    const showNav = isAuthenticated && location.pathname !== '/';
 
     return (
-        <div className="flex min-h-screen bg-white">
-            {showSidebar && <Sidebar />}
-            <div className="flex-1 overflow-y-auto">
-                 <main className="relative">
+        <div className="min-h-screen bg-white md:flex">
+            {showNav && (
+                <Sidebar 
+                    isOpen={isMobileSidebarOpen}
+                    onClose={() => setMobileSidebarOpen(false)}
+                />
+            )}
+            <div className="flex-1 flex flex-col overflow-x-hidden">
+                {showNav && (
+                    <Header onMenuClick={() => setMobileSidebarOpen(true)} />
+                )}
+                 <main className="flex-1 overflow-y-auto">
                     <AnimatePresence mode="wait">
                         <Routes location={location} key={location.pathname}>
                             <Route path="/" element={<Onboarding />} />
