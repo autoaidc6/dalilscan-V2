@@ -143,11 +143,13 @@ const Scan = () => {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
             const imagePart = dataUrlToGenerativePart(imageSrc);
 
+            const prompt = "Analyze the food item in the image. Provide a common name for the food and its estimated nutritional information for a standard serving size (calories in kcal, protein, carbs, and fat in grams). Respond ONLY with a single JSON object. If you cannot identify a food item, return a JSON object with an 'error' field explaining why. Example success: {\"name\": \"Apple Pie\", \"calories\": 300, \"protein\": 4, \"carbs\": 50, \"fat\": 15}. Example error: {\"error\": \"No food identified in the image.\"}";
+
             const response = await ai.models.generateContent({
                 model: "gemini-2.5-flash",
                 contents: {
                     parts: [
-                        { text: "Analyze the food item in this image. Provide its name, and estimated nutritional information (calories, protein, carbs, fat) in grams for a single serving. Your response MUST be in JSON." },
+                        { text: prompt },
                         imagePart
                     ]
                 },
@@ -161,14 +163,23 @@ const Scan = () => {
                             protein: { type: Type.NUMBER },
                             carbs: { type: Type.NUMBER },
                             fat: { type: Type.NUMBER },
-                        },
-                        required: ["name", "calories", "protein", "carbs", "fat"],
+                            error: { type: Type.STRING },
+                        }
                     },
                 }
             });
             
             const resultText = response.text;
+            if (!resultText) {
+                throw new Error("Received an empty response from the AI model.");
+            }
+
             const parsedResult = JSON.parse(resultText);
+
+            if (parsedResult.error || !parsedResult.name || typeof parsedResult.calories !== 'number' || typeof parsedResult.protein !== 'number' || typeof parsedResult.carbs !== 'number' || typeof parsedResult.fat !== 'number') {
+                 throw new Error(parsedResult.error || "Incomplete or invalid data received from the AI model.");
+            }
+
             const mealTimestamp = new Date();
 
             const mealData: Meal = {
@@ -186,7 +197,7 @@ const Scan = () => {
             setAnalysisResult(mealData);
 
         } catch (e) {
-            console.error(e);
+            console.error("Error during image analysis:", e);
             showToast(t('errorAnalysis'), 'error');
         } finally {
             setIsLoading(false);
