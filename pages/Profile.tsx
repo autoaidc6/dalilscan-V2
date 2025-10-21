@@ -65,11 +65,11 @@ const Profile = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8 bg-background min-h-screen">
             <h1 className="text-4xl font-bold text-brand-dark-purple mb-2">{t('profileTitle')}</h1>
             <p className="text-gray-500 mb-8">{t('profileSubtitle')}</p>
 
-            <div className="bg-white rounded-xl shadow-sm p-8 max-w-2xl mx-auto border border-gray-100">
+            <div className="bg-white rounded-xl shadow-subtle p-8 max-w-2xl mx-auto border border-gray-100">
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1 rtl:text-right">{t('name')}</label>
                     <input
@@ -77,7 +77,7 @@ const Profile = () => {
                         id="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple text-gray-800"
+                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple text-gray-800"
                     />
                 </div>
                 <div className="mb-6">
@@ -87,12 +87,12 @@ const Profile = () => {
                         id="goal"
                         value={goal}
                         onChange={(e) => setGoal(Number(e.target.value))}
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple text-gray-800"
+                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple text-gray-800"
                     />
                 </div>
                 <button
                     onClick={handleSave}
-                    className="w-full bg-brand-purple hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                    className="w-full bg-brand-purple hover:bg-violet-700 text-white font-bold py-3 px-4 rounded-lg shadow-subtle-md hover:shadow-lg transition-all"
                 >
                     {t('saveChanges')}
                 </button>
@@ -104,8 +104,8 @@ const Profile = () => {
                         onClick={() => handleLanguageChange('en')}
                         className={`px-6 py-2 rounded-full font-bold transition-all ${
                         language.startsWith('en')
-                            ? 'bg-brand-purple text-white shadow-lg'
-                            : 'bg-gray-200 text-gray-700'
+                            ? 'bg-brand-purple text-white shadow-md'
+                            : 'bg-white text-gray-700 border'
                         }`}
                     >
                         English
@@ -114,8 +114,8 @@ const Profile = () => {
                         onClick={() => handleLanguageChange('ar')}
                         className={`px-6 py-2 rounded-full font-bold transition-all ${
                         language === 'ar'
-                            ? 'bg-brand-purple text-white shadow-lg'
-                            : 'bg-gray-200 text-gray-700'
+                            ? 'bg-brand-purple text-white shadow-md'
+                            : 'bg-white text-gray-700 border'
                         }`}
                     >
                         العربية
@@ -128,7 +128,7 @@ const Profile = () => {
                  <div className="mt-8 border-t pt-6 border-gray-200">
                     <button
                         onClick={handleLogout}
-                        className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                        className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-subtle-md hover:shadow-lg transition-all"
                     >
                         {t('logout')}
                     </button>

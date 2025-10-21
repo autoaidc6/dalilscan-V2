@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useI18n } from '../context/I18nContext';
 import { Meal } from '../types';
 
@@ -13,12 +14,50 @@ interface EditMealModalProps {
 const EditMealModal: React.FC<EditMealModalProps> = ({ isOpen, onClose, meal, onSave }) => {
   const { t } = useI18n();
   const [formData, setFormData] = useState<Partial<Meal>>({});
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (meal) {
       setFormData(meal);
     }
   }, [meal]);
+
+  // Focus trap for accessibility
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+    const modal = modalRef.current;
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    firstElement?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+            if (e.shiftKey) { // if shift key pressed for shift + tab combination
+                if (document.activeElement === firstElement) {
+                    lastElement.focus(); // move focus to the last focusable element
+                    e.preventDefault();
+                }
+            } else { // if tab key is pressed
+                if (document.activeElement === lastElement) { // if focused has reached to last focusable element
+                    firstElement.focus(); // move focus to the first focusable element
+                    e.preventDefault();
+                }
+            }
+        } else if (e.key === 'Escape') {
+            onClose();
+        }
+    };
+    
+    modal.addEventListener('keydown', handleKeyDown);
+    return () => {
+        modal.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,7 +77,7 @@ const EditMealModal: React.FC<EditMealModalProps> = ({ isOpen, onClose, meal, on
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in" role="dialog" aria-modal="true" aria-labelledby="edit-meal-title">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+      <div ref={modalRef} className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
         <h3 id="edit-meal-title" className="text-xl font-bold text-brand-dark-purple mb-6 text-center">{t('editMeal')}</h3>
         
         <div className="space-y-4">

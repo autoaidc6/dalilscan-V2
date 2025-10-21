@@ -10,7 +10,7 @@ const WeeklyReport = () => {
     const { weekChartData } = useLog();
 
     return (
-        <div className="bg-white p-8 rounded-2xl shadow-sm">
+        <div className="bg-white p-8 rounded-2xl shadow-subtle">
             <h2 className="text-2xl font-bold text-brand-dark-purple mb-6">{t('weeklyReport')}</h2>
             <div className="mb-8">
                 <h3 className="font-semibold text-lg mb-2 text-brand-text">{t('caloriesPerDay')}</h3>
@@ -18,16 +18,17 @@ const WeeklyReport = () => {
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={weekChartData}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="name" tick={{ fill: '#666' }} />
-                            <YAxis tick={{ fill: '#666' }} />
+                            <XAxis dataKey="name" tick={{ fill: '#6B7280' }} />
+                            <YAxis tick={{ fill: '#6B7280' }} />
                             <Tooltip
                                 contentStyle={{
                                     backgroundColor: 'white',
                                     border: '1px solid #ddd',
                                     borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                                 }}
                             />
-                            <Bar dataKey="calories" fill="#FFA726" name={t('calories')} radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="calories" fill="#FB923C" name={t('calories')} radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
@@ -38,8 +39,8 @@ const WeeklyReport = () => {
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={weekChartData}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="name" tick={{ fill: '#666' }} />
-                            <YAxis tick={{ fill: '#666' }} />
+                            <XAxis dataKey="name" tick={{ fill: '#6B7280' }} />
+                            <YAxis tick={{ fill: '#6B7280' }} />
                             <Tooltip
                                 contentStyle={{
                                     backgroundColor: 'white',
@@ -72,7 +73,7 @@ const Leaderboard = () => {
     ].sort((a,b) => b.points - a.points).map((u, i) => ({...u, rank: i + 1}));
 
     return (
-         <div className="bg-white p-8 rounded-2xl shadow-sm">
+         <div className="bg-white p-8 rounded-2xl shadow-subtle">
             <h2 className="text-2xl font-bold text-brand-dark-purple mb-6">{t('leaderboard')}</h2>
             <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-4 text-sm font-bold text-gray-500 px-4">
@@ -83,8 +84,8 @@ const Leaderboard = () => {
                  {leaderboardData.map(item => (
                     <div key={item.name} className={`grid grid-cols-3 gap-4 items-center p-4 rounded-lg ${item.isCurrentUser ? 'bg-brand-light-purple border-2 border-brand-purple' : 'bg-gray-50'}`}>
                         <span className={`font-bold text-lg ${item.rank <= 3 ? 'text-amber-500' : 'text-gray-600'}`}>{item.rank}</span>
-                        <span className={`font-semibold ${item.isCurrentUser ? 'text-brand-purple' : 'text-brand-text'}`}>{item.name}</span>
-                        <span className={`text-right font-bold ${item.isCurrentUser ? 'text-brand-purple' : 'text-brand-text'}`}>{item.points}</span>
+                        <span className={`font-semibold ${item.isCurrentUser ? 'text-brand-purple' : 'text-brand-dark-purple'}`}>{item.name}</span>
+                        <span className={`text-right font-bold ${item.isCurrentUser ? 'text-brand-purple' : 'text-brand-dark-purple'}`}>{item.points}</span>
                     </div>
                 ))}
             </div>
@@ -99,7 +100,7 @@ const Insights = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="p-8 bg-gradient-to-br from-indigo-50/50 via-white to-emerald-50/50 min-h-screen"
+      className="p-8 bg-background min-h-screen"
     >
       <header className="mb-10">
         <h1 className="text-4xl font-bold text-brand-dark-purple mb-2">{t('insightsTitle')}</h1>

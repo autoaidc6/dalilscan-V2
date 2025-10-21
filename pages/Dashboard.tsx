@@ -6,7 +6,8 @@ import { useLog } from '../context/LogContext';
 import { motion } from 'framer-motion';
 import { useI18n } from '../context/I18nContext';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { CameraIcon, UploadIcon, FireIcon, WaterDropIcon, PlusIcon, ChallengeIcon } from '../components/icons/Icons';
+import { CameraIcon, UploadIcon, FireIcon, WaterDropIcon, PlusIcon, TargetIcon, PencilIcon } from '../components/icons/Icons';
+import { useUI } from '../context/UIContext';
 import { getDailyChallenge } from '../gamification/challenges';
 
 // --- Memoized Card Components for Performance Optimization ---
@@ -19,7 +20,7 @@ const DailyCaloriesCard = React.memo(() => {
     const remainingCalories = user.calorieGoal - totalCaloriesToday;
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-calorie-card p-6 rounded-2xl shadow-subtle">
             <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
                 <FireIcon className="w-6 h-6 text-calorie-progress" />
                 <h3 className="font-bold text-lg text-brand-dark-purple">{t('dailyCalories')}</h3>
@@ -28,7 +29,7 @@ const DailyCaloriesCard = React.memo(() => {
                 <p><span className="text-3xl font-bold text-brand-dark-purple">{Math.round(totalCaloriesToday)}</span><span className="text-sm text-gray-600"> {t('consumed')}</span></p>
                 <p><span className="text-lg font-bold text-gray-500">{Math.round(remainingCalories)}</span><span className="text-sm text-gray-500"> {t('remaining')}</span></p>
             </div>
-            <div className="w-full bg-orange-100 rounded-full h-2.5 mb-2">
+            <div className="w-full bg-orange-200 rounded-full h-2.5 mb-2">
                 <div className="bg-calorie-progress h-2.5 rounded-full" style={{ width: `${Math.min(calorieProgress, 100)}%` }}></div>
             </div>
             <p className="text-xs text-center text-gray-500">{t('goal')}: {user.calorieGoal} {t('kcal')}</p>
@@ -50,7 +51,7 @@ const MacroDistributionCard = React.memo(() => {
     const hasMacros = useMemo(() => macroData.some(d => d.value > 0), [macroData]);
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl shadow-subtle">
             <h3 className="font-bold text-lg text-brand-dark-purple mb-2">{t('macroDistribution')}</h3>
             <div className="h-32">
                 <ResponsiveContainer width="100%" height="100%">
@@ -80,20 +81,20 @@ const WaterIntakeCard = React.memo(() => {
     const consumedGlasses = Math.floor(totalWaterToday / 250);
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col">
+        <div className="bg-water-card p-6 rounded-2xl shadow-subtle flex flex-col">
             <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
-                <WaterDropIcon className="w-6 h-6 text-brand-accent" />
+                <WaterDropIcon className="w-6 h-6 text-blue-500" />
                 <h3 className="font-bold text-lg text-brand-dark-purple">{t('waterIntake')}</h3>
             </div>
             <div className="flex-grow">
                 <p className="text-3xl font-bold text-brand-dark-purple mb-2">{totalWaterToday} <span className="text-lg font-medium text-gray-500">{t('ml')}</span></p>
                 <div className="flex space-x-1 rtl:space-x-reverse mb-3">
                     {Array.from({length: totalGlasses}).map((_, i) => (
-                        <div key={i} className={`h-8 flex-1 rounded ${i < consumedGlasses ? 'bg-brand-accent' : 'bg-cyan-200/50'}`}></div>
+                        <div key={i} className={`h-8 flex-1 rounded ${i < consumedGlasses ? 'bg-blue-400' : 'bg-blue-200/50'}`}></div>
                     ))}
                 </div>
             </div>
-            <button onClick={addWaterEntry} className="w-full mt-2 bg-brand-accent hover:bg-teal-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse">
+            <button onClick={addWaterEntry} className="w-full mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-subtle hover:shadow-subtle-md transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse">
                 <PlusIcon className="w-5 h-5" />
                 <span>{t('addGlass')}</span>
             </button>
@@ -121,7 +122,7 @@ const DailyChallengeCard = React.memo(() => {
         }
 
         const isCompleted = challenge.metric === 'calories' ? current < challenge.goal && current > 0 : current >= challenge.goal;
-        const progress = challenge.goal > 0 ? Math.min((current / challenge.goal) * 100, 100) : 0;
+        const progress = Math.min((current / challenge.goal) * 100, 100);
 
         const progressText = challenge.metric === 'calories' ? `${Math.round(current)} / < ${challenge.goal}` : `${Math.round(current)} / ${challenge.goal}`;
 
@@ -130,18 +131,16 @@ const DailyChallengeCard = React.memo(() => {
     }, [challenge, logEntries, totalCaloriesToday, totalWaterToday]);
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse mb-3">
-                <ChallengeIcon className="w-6 h-6 text-brand-purple" />
+        <div className="bg-white p-6 rounded-2xl shadow-subtle">
+            <div className="flex items-center space-x-3 rtl:space-x-reverse mb-4">
+                <TargetIcon className="w-6 h-6 text-brand-purple" />
                 <h3 className="font-bold text-lg text-brand-dark-purple">{t('dailyChallenge')}</h3>
             </div>
-            <p className="text-gray-600 mb-3">{t(challenge.titleKey, { goal: challenge.goal })}</p>
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                <div className="w-full bg-gray-200 rounded-full h-1.5 flex-1">
-                    <div className={`${isCompleted ? 'bg-green-500' : 'bg-brand-purple'} h-1.5 rounded-full transition-all duration-500`} style={{ width: `${progress}%` }}></div>
-                </div>
-                <p className="text-xs text-gray-500 font-semibold">{progressText}</p>
+            <p className={`font-semibold mb-2 ${isCompleted ? 'text-green-600' : 'text-gray-700'}`}>{t(challenge.titleKey, { goal: challenge.goal })}</p>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                 <div className={`${isCompleted ? 'bg-green-500' : 'bg-brand-purple'} h-2.5 rounded-full transition-all duration-500`} style={{ width: `${progress}%` }}></div>
             </div>
+            <p className="text-xs text-right text-gray-500">{progressText}</p>
         </div>
     );
 });
@@ -150,6 +149,7 @@ const Dashboard = () => {
   const { t } = useI18n();
   const { user } = useUser();
   const navigate = useNavigate();
+  const { openScanModal, openManualModal } = useUI();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
@@ -170,58 +170,65 @@ const Dashboard = () => {
   };
   
   return (
-    <>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="p-6 md:p-8 bg-gray-50 min-h-screen"
+        className="p-4 sm:p-8 bg-background min-h-screen"
       >
-        <header className="mb-8">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 mb-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-brand-dark-purple">{t('dashboardWelcome', { name: user.name })}</h1>
-                <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                    <div className="flex items-center space-x-1 rtl:space-x-reverse text-sm text-orange-500 font-semibold">
-                        <FireIcon className="w-5 h-5 text-orange-400" />
-                        <span>{user.streak} {t('dayStreak')}</span>
+        <header className="mb-10">
+            <div className="flex justify-between items-center mb-2">
+                <h1 className="text-3xl sm:text-4xl font-bold text-brand-dark-purple">{t('dashboardWelcome', { name: user.name })}</h1>
+                <div className="flex items-center space-x-2 sm:space-x-4 rtl:space-x-reverse">
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse text-orange-500 font-bold text-sm sm:text-base">
+                        <FireIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <span>{user.streak}</span>
                     </div>
-                     <div className="text-sm font-semibold text-brand-purple bg-brand-light-purple px-4 py-1.5 rounded-full">
+                     <div className="text-xs sm:text-sm font-bold text-brand-purple bg-brand-light-purple px-3 py-1 rounded-full">
                         {user.points} {t('points')}
                     </div>
                 </div>
             </div>
-            <p className="text-gray-500">{t('scanYourFoodSubtitle')}</p>
+          <p className="text-gray-500">{t('scanYourFoodSubtitle')}</p>
         </header>
 
-        <div className="flex items-stretch space-x-4 rtl:space-x-reverse mb-10">
-           <input
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 max-w-lg mx-auto">
+            <input
               type="file"
               accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
               aria-hidden="true"
-          />
-          <button onClick={() => navigate('/scan')} className="flex-1 flex items-center justify-center space-x-3 rtl:space-x-reverse bg-brand-purple text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg hover:bg-indigo-600 transition-all">
-            <CameraIcon className="w-6 h-6" />
-            <span>{t('scanFood')}</span>
-          </button>
-          <button onClick={handleUploadClick} className="p-3 bg-white border border-gray-200 rounded-lg text-gray-600 hover:border-brand-purple hover:bg-brand-light-purple hover:text-brand-purple transition-colors shadow-sm">
-            <UploadIcon className="w-6 h-6" />
-          </button>
+            />
+            <button onClick={handleUploadClick} aria-label={t('ariaLabelUpload')} className="w-full sm:w-auto flex flex-col items-center justify-center p-4 bg-white rounded-xl text-brand-purple hover:bg-brand-light-purple transition-colors shadow-subtle space-y-2 flex-1">
+                <UploadIcon className="w-6 h-6" />
+                <span className="text-sm font-semibold">{t('uploadImage')}</span>
+            </button>
+            <button onClick={openScanModal} className="w-full sm:w-auto flex items-center justify-center space-x-3 rtl:space-x-reverse bg-brand-purple text-white font-bold py-4 px-6 rounded-xl shadow-subtle-md hover:shadow-xl transform hover:-translate-y-1 transition-all order-first sm:order-none flex-grow-0 sm:flex-grow-[1.5]">
+                <CameraIcon className="w-7 h-7" />
+                <span className="text-lg">{t('scanFood')}</span>
+            </button>
+            <button onClick={openManualModal} aria-label={t('ariaLabelAddManually')} className="w-full sm:w-auto flex flex-col items-center justify-center p-4 bg-white rounded-xl text-brand-purple hover:bg-brand-light-purple transition-colors shadow-subtle space-y-2 flex-1">
+                <PencilIcon className="w-6 h-6" />
+                <span className="text-sm font-semibold">{t('manualEntry')}</span>
+            </button>
         </div>
 
         <div>
           <h2 className="text-2xl font-bold text-brand-dark-purple mb-6">{t('todaysSummary')}</h2>
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             <DailyChallengeCard />
-            <MacroDistributionCard />
-            <DailyCaloriesCard />
-            <WaterIntakeCard />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <MacroDistributionCard />
+                 <WaterIntakeCard />
+            </div>
+            <div className="md:col-span-2 lg:col-span-2">
+                <DailyCaloriesCard />
+            </div>
           </div>
         </div>
       </motion.div>
-    </>
   );
 };
 

@@ -11,7 +11,7 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#5A4FCF" />
+    <meta name="theme-color" content="#6D28D9" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -27,24 +27,25 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              'brand-dark-purple': '#1e0f3b',
-              'brand-purple': '#5A4FCF',
-              'brand-light-purple': '#F0EEFF',
-              'brand-accent': '#26C6DA',
-              'calorie-card': '#FEF6E6',
-              'calorie-progress': '#FFA726',
-              'water-card': '#F0FAFF',
-              'brand-text': '#333652',
+              'brand-dark-purple': '#1F2937', // Dark Slate for text
+              'brand-purple': '#6D28D9',      // Vibrant Purple
+              'brand-light-purple': '#F5F3FF', // Light Violet
+              'brand-accent': '#34D399',      // Emerald Green
+              'calorie-card': '#FFF7ED',      // Warm Peach
+              'calorie-progress': '#FB923C',  // Softer Orange
+              'water-card': '#EFF6FF',        // Light Blue
+              'brand-text': '#1F2937',        // Re-aliased for consistency
+              'background': '#F9FAFB',       // Lightest Gray
             },
             fontFamily: {
-              sans: ['Roboto', 'sans-serif'],
+              sans: ['Poppins', 'sans-serif'],
               arabic: ['Noto Sans Arabic', 'sans-serif'],
             },
             animation: {
@@ -56,6 +57,10 @@
               fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
               fadeOut: { '0%': { opacity: 1 }, '100%': { opacity: 0 } },
               slideIn: { '0%': { transform: 'translateY(20px)', opacity: 0 }, '100%': { transform: 'translateY(0)', opacity: 1 } },
+            },
+            boxShadow: {
+              'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+              'subtle-md': '0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05)',
             }
           }
         }
@@ -63,10 +68,13 @@
     </script>
     <style>
       html[dir="rtl"] body {
-        font-family: 'Noto Sans Arabic', sans-serif;
+        font-family: 'Noto Sans Arabic', 'Poppins', sans-serif;
       }
       html[dir="ltr"] body {
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Poppins', sans-serif;
+      }
+      body {
+        color: #1F2937; /* Default text color */
       }
     </style>
   <script type="importmap">

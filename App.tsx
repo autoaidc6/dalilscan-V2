@@ -1,15 +1,18 @@
-import React, { useEffect, Suspense, lazy, useState } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/Sidebar';
-import Header from './components/Header';
+import BottomNav from './components/BottomNav';
 import { UserProvider } from './context/UserContext';
 import { LogProvider } from './context/LogContext';
 import { I18nProvider, useI18n } from './context/I18nContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Toast from './components/Toast';
+import { UIProvider, useUI } from './context/UIContext';
+import ScanModal from './components/ScanModal';
+import ManualEntryModal from './components/ManualEntryModal';
 
 // Lazy load page components for better performance
 const Onboarding = lazy(() => import('./pages/Onboarding'));
@@ -21,48 +24,33 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Insights = lazy(() => import('./pages/Insights'));
 
 // A component to protect routes that require authentication
-// FIX: Changed children type to JSX.Element for better type inference with lazy components.
-// FIX: Changed JSX.Element to React.ReactElement to resolve "Cannot find namespace 'JSX'" error.
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
     const { isAuthenticated } = useAuth();
     const location = useLocation();
 
     if (!isAuthenticated) {
-        // Redirect them to the / page, but save the current location they were
-        // trying to go to. This is not used yet, but is good practice.
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;
 };
 
-
 const AppContent = () => {
     const location = useLocation();
     const { isAuthenticated } = useAuth();
-    const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const { isScanModalOpen, closeScanModal, isManualModalOpen, closeManualModal } = useUI();
     
-    // Close sidebar on route change
-    useEffect(() => {
-        setMobileSidebarOpen(false);
-    }, [location.pathname]);
-    
-    // Show sidebar and header only on protected routes
-    const showNav = isAuthenticated && location.pathname !== '/';
+    const showNavigation = isAuthenticated && location.pathname !== '/';
 
     return (
-        <div className="min-h-screen bg-white md:flex">
-            {showNav && (
-                <Sidebar 
-                    isOpen={isMobileSidebarOpen}
-                    onClose={() => setMobileSidebarOpen(false)}
-                />
+        <div className="flex min-h-screen bg-background">
+            {showNavigation && (
+                <div className="hidden md:block">
+                    <Sidebar />
+                </div>
             )}
-            <div className="flex-1 flex flex-col overflow-x-hidden">
-                {showNav && (
-                    <Header onMenuClick={() => setMobileSidebarOpen(true)} />
-                )}
-                 <main className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
+                 <main className="relative pb-20 md:pb-0">
                     <AnimatePresence mode="wait">
                         <Routes location={location} key={location.pathname}>
                             <Route path="/" element={<Onboarding />} />
@@ -77,6 +65,13 @@ const AppContent = () => {
                     </AnimatePresence>
                 </main>
             </div>
+            {showNavigation && (
+                <div className="md:hidden">
+                    <BottomNav />
+                </div>
+            )}
+            <ScanModal isOpen={isScanModalOpen} onClose={closeScanModal} />
+            <ManualEntryModal isOpen={isManualModalOpen} onClose={closeManualModal} />
         </div>
     );
 };
@@ -101,11 +96,13 @@ const App = () => {
           <UserProvider>
             <LogProvider>
               <AuthProvider>
+                <UIProvider>
                   <HashRouter>
                       <LanguageEffect />
                       <AppContent />
                       <Toast />
                   </HashRouter>
+                </UIProvider>
               </AuthProvider>
             </LogProvider>
           </UserProvider>

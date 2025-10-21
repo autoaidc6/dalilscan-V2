@@ -36,13 +36,13 @@ const Onboarding = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 to-cyan-100 dark:from-gray-800 dark:to-gray-900 p-6 text-center"
+      className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 p-6 text-center"
     >
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2, type: 'spring' }}
-        className="text-emerald-600 dark:text-emerald-400 text-3xl font-bold mb-2"
+        className="text-brand-purple text-3xl font-bold mb-2"
       >
         🌿 {t('appName')}
       </motion.div>
@@ -50,12 +50,12 @@ const Onboarding = () => {
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-4xl font-bold text-gray-800 dark:text-white mb-4">{t('onboardingTitle')}</motion.h1>
+        className="text-4xl font-bold text-brand-dark-purple mb-4">{t('onboardingTitle')}</motion.h1>
       <motion.p 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="text-gray-600 dark:text-gray-300 max-w-md mx-auto mb-8">{t('onboardingSubtitle')}</motion.p>
+        className="text-gray-600 max-w-md mx-auto mb-8">{t('onboardingSubtitle')}</motion.p>
 
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -64,14 +64,14 @@ const Onboarding = () => {
         className="w-full max-w-sm space-y-6"
       >
         <div className="space-y-4">
-          <p className="font-semibold text-gray-700 dark:text-gray-300">{t('selectLanguage')}</p>
+          <p className="font-semibold text-gray-700">{t('selectLanguage')}</p>
           <div className="flex justify-center space-x-4 rtl:space-x-reverse">
             <button
               onClick={() => handleLanguageChange('en')}
               className={`px-6 py-2 rounded-full font-bold transition-all ${
                 language.startsWith('en')
-                  ? 'bg-emerald-500 text-white shadow-lg'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'
+                  ? 'bg-brand-purple text-white shadow-md'
+                  : 'bg-white text-gray-700'
               }`}
             >
               English
@@ -80,8 +80,8 @@ const Onboarding = () => {
               onClick={() => handleLanguageChange('ar')}
               className={`px-6 py-2 rounded-full font-bold transition-all ${
                 language === 'ar'
-                  ? 'bg-emerald-500 text-white shadow-lg'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'
+                  ? 'bg-brand-purple text-white shadow-md'
+                  : 'bg-white text-gray-700'
               }`}
             >
               العربية
@@ -89,7 +89,7 @@ const Onboarding = () => {
           </div>
         </div>
 
-        <button className="w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white font-semibold py-3 px-4 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center opacity-50 cursor-not-allowed" disabled>
+        <button className="w-full bg-white text-gray-800 font-semibold py-3 px-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow flex items-center justify-center opacity-50 cursor-not-allowed" disabled>
           <svg className="w-6 h-6 mr-3 rtl:ml-3 rtl:mr-0" viewBox="0 0 48 48">
             <path fill="#FFC107" d="M43.611 20.083H42V20h2v-2h-2v-2h-2v2h-2v2h2v2h-2v2h2v-2h2v-2h-2v-2h-2v2h2v2zM24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
             <path fill="#FF3D00" d="M6.306 14.691l6.522 5.025C14.381 15.317 18.798 12 24 12c3.059 0 5.842.979 8.17 2.639l6.19-5.238C34.86 6.81 29.692 4 24 4 16.227 4 9.505 8.444 6.306 14.691z" />
@@ -101,7 +101,7 @@ const Onboarding = () => {
 
         <button
           onClick={handleContinueAsGuest}
-          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all"
+          className="w-full bg-brand-purple hover:bg-violet-700 text-white font-bold py-3 px-4 rounded-lg shadow-subtle-md hover:shadow-lg transition-all"
         >
           {t('continue')}
         </button>

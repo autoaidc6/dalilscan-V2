@@ -23,22 +23,6 @@ const Goals = () => {
     activityLevel: user.activityLevel,
   });
 
-  // This effect syncs the local state if the user context changes from another source
-  useEffect(() => {
-    setGoals({
-      calorieGoal: user.calorieGoal,
-      proteinGoal: user.proteinGoal,
-      carbsGoal: user.carbsGoal,
-      fatGoal: user.fatGoal,
-      waterGoal: user.waterGoal,
-      weight: user.weight,
-      height: user.height,
-      age: user.age,
-      activityLevel: user.activityLevel,
-    });
-  }, [user]);
-
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setGoals(prevGoals => ({
@@ -63,7 +47,7 @@ const Goals = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="p-8 bg-gradient-to-br from-indigo-50/50 via-white to-emerald-50/50 min-h-screen"
+      className="p-8 bg-background min-h-screen"
     >
       <header className="mb-10">
         <h1 className="text-4xl font-bold text-brand-dark-purple mb-2">{t('nutritionGoalsTitle')}</h1>
@@ -72,7 +56,7 @@ const Goals = () => {
 
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Daily Targets Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-8">
+        <div className="bg-white rounded-2xl shadow-subtle p-8">
             <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
                 <div className="w-10 h-10 flex items-center justify-center bg-brand-light-purple rounded-full">
                     <TargetIcon className="w-6 h-6 text-brand-purple" />
@@ -104,7 +88,7 @@ const Goals = () => {
         </div>
 
         {/* Personal Information Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-8">
+        <div className="bg-white rounded-2xl shadow-subtle p-8">
             <h2 className="text-2xl font-bold text-brand-dark-purple mb-6">{t('personalInformation')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div>
@@ -140,7 +124,7 @@ const Goals = () => {
         <div className="flex justify-center">
             <button
                 onClick={handleSave}
-                className="w-full max-w-sm bg-gradient-to-r from-brand-purple to-indigo-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all"
+                className="w-full max-w-sm bg-brand-purple text-white font-bold py-4 px-6 rounded-xl shadow-subtle-md hover:shadow-xl transform hover:-translate-y-1 transition-all"
             >
                 {t('saveGoals')}
             </button>

@@ -3,8 +3,9 @@ import { useLog } from '../context/LogContext';
 import { motion } from 'framer-motion';
 import { Meal, WaterLog } from '../types';
 import { useI18n } from '../context/I18nContext';
-import { WaterDropIcon, PencilIcon } from '../components/icons/Icons';
+import { WaterDropIcon, PencilIcon, CameraIcon } from '../components/icons/Icons';
 import EditMealModal from '../components/EditMealModal';
+import { useNavigate } from 'react-router-dom';
 
 interface MealCardProps {
     meal: Meal;
@@ -14,8 +15,13 @@ interface MealCardProps {
 const MealCard: React.FC<MealCardProps> = React.memo(({ meal, onEdit }) => {
     const { t, language } = useI18n();
     return (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden flex items-start space-x-4 rtl:space-x-reverse p-4 border border-gray-100 relative">
-            {meal.image && <img src={meal.image} alt={meal.name} className="w-24 h-24 object-cover rounded-lg" loading="lazy" />}
+        <div className="bg-white rounded-xl shadow-subtle overflow-hidden flex items-start space-x-4 rtl:space-x-reverse p-4 border border-gray-100 relative">
+            {meal.image ? 
+                <img src={meal.image} alt={meal.name} className="w-24 h-24 object-cover rounded-lg" loading="lazy" /> :
+                <div className="w-24 h-24 bg-brand-light-purple flex items-center justify-center rounded-lg">
+                    <PencilIcon className="w-10 h-10 text-brand-purple opacity-50" />
+                </div>
+            }
             <div className="flex-grow">
                 <div className="flex justify-between items-start mb-1">
                     <h3 className="font-bold text-lg text-brand-dark-purple leading-tight max-w-[80%]">{meal.name}</h3>
@@ -29,7 +35,7 @@ const MealCard: React.FC<MealCardProps> = React.memo(({ meal, onEdit }) => {
                     <span className="text-orange-500">F: {meal.fat.toFixed(1)}g</span>
                 </div>
             </div>
-             <button onClick={() => onEdit(meal)} aria-label={t('editMeal')} className="absolute top-3 right-3 rtl:left-3 rtl:right-auto text-gray-400 hover:text-brand-purple p-1 rounded-full hover:bg-gray-100 transition-colors">
+             <button onClick={() => onEdit(meal)} aria-label={t('ariaLabelEditMeal', { mealName: meal.name })} className="absolute top-3 right-3 rtl:left-3 rtl:right-auto text-gray-400 hover:text-brand-purple p-1 rounded-full hover:bg-gray-100 transition-colors">
                 <PencilIcon className="w-5 h-5" />
             </button>
         </div>
@@ -39,9 +45,9 @@ const MealCard: React.FC<MealCardProps> = React.memo(({ meal, onEdit }) => {
 const WaterCard: React.FC<{ log: WaterLog }> = React.memo(({ log }) => {
     const { t, language } = useI18n();
     return (
-        <div className="bg-white rounded-xl shadow-sm flex items-center space-x-4 rtl:space-x-reverse p-4 border border-gray-100">
+        <div className="bg-white rounded-xl shadow-subtle flex items-center space-x-4 rtl:space-x-reverse p-4 border border-gray-100">
             <div className="w-24 h-24 flex items-center justify-center bg-water-card rounded-lg">
-                <WaterDropIcon className="w-12 h-12 text-brand-accent" />
+                <WaterDropIcon className="w-12 h-12 text-blue-500" />
             </div>
             <div className="flex-grow">
                  <h3 className="font-bold text-lg text-brand-dark-purple">{t('waterIntake')}</h3>
@@ -57,6 +63,7 @@ const History = () => {
     const { logEntries, updateMeal } = useLog();
     const [filter, setFilter] = useState('All');
     const [mealToEdit, setMealToEdit] = useState<Meal | null>(null);
+    const navigate = useNavigate();
 
     const handleEditClick = (meal: Meal) => {
         setMealToEdit(meal);
@@ -90,7 +97,7 @@ const History = () => {
             meal={mealToEdit}
             onSave={handleSaveMeal}
         />
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-8 bg-background min-h-screen">
             <h1 className="text-4xl font-bold text-brand-dark-purple mb-2">{t('historyTitle')}</h1>
             <p className="text-gray-500 mb-8">{t('historySubtitle')}</p>
 
@@ -101,8 +108,8 @@ const History = () => {
                         onClick={() => setFilter(category)}
                         className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
                             filter === category
-                            ? 'bg-brand-purple text-white shadow'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-brand-purple text-white shadow-subtle'
+                            : 'bg-white text-gray-700 hover:bg-gray-200'
                         }`}
                     >
                         {t(`history${category}`)}
@@ -122,8 +129,16 @@ const History = () => {
                         return null;
                     })
                 ) : (
-                    <div className="text-center py-16 bg-gray-50 rounded-xl">
-                        <p className="text-gray-500">{t('noHistory')}</p>
+                    <div className="text-center py-16 bg-white rounded-xl flex flex-col items-center justify-center shadow-subtle">
+                        <CameraIcon className="w-16 h-16 text-gray-300 mb-4" />
+                        <h3 className="text-xl font-bold text-brand-dark-purple mb-2">{t('emptyHistoryTitle')}</h3>
+                        <p className="text-gray-500 mb-6 max-w-xs">{t('noHistory')}</p>
+                        <button 
+                            onClick={() => navigate('/dashboard')}
+                            className="bg-brand-purple hover:bg-violet-700 text-white font-bold py-3 px-6 rounded-lg shadow-subtle-md hover:shadow-lg transition-all"
+                        >
+                            {t('emptyHistoryCta')}
+                        </button>
                     </div>
                 )}
             </div>

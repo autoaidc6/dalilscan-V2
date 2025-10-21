@@ -1,21 +1,8 @@
 import React from 'react';
 import { useToast } from '../context/ToastContext';
 import { AnimatePresence, motion } from 'framer-motion';
-
-// Success Icon
-const CheckCircleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
-
-// Error Icon (the 'X' mark)
-const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-);
-
+// FIX: Import icons from the central Icons file to promote reusability.
+import { CheckCircleIcon, XCircleIcon } from './icons/Icons';
 
 const Toast = () => {
   const { toasts, hideToast } = useToast();
@@ -42,10 +29,10 @@ const Toast = () => {
                     }`}
                     role="alert"
                 >
-                    <div className={`inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full ${
+                    <div className={`inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg ${
                         toast.type === 'success' ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'
                     }`}>
-                        {toast.type === 'success' ? <CheckCircleIcon className="w-5 h-5" /> : <XIcon className="w-5 h-5" />}
+                        {toast.type === 'success' ? <CheckCircleIcon className="w-5 h-5" /> : <XCircleIcon className="w-5 h-5" />}
                     </div>
                     <div className="ms-3 text-sm font-normal">{toast.message}</div>
                     <button
@@ -56,7 +43,7 @@ const Toast = () => {
                     >
                         <span className="sr-only">Close</span>
                         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 13L13 1M1 1l12 12"/>
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                         </svg>
                     </button>
                 </motion.div>
