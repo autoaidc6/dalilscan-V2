@@ -1,0 +1,46 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#6D28D9"/>
+  <rect width="1200" height="630" fill="url(#grad1)"/>
+  
+  <!-- Abstract Background Elements -->
+  <circle cx="100" cy="100" r="300" stroke="#8B5CF6" stroke-width="40" stroke-opacity="0.2"/>
+  <circle cx="1100" cy="530" r="250" stroke="#8B5CF6" stroke-width="40" stroke-opacity="0.2"/>
+  <circle cx="600" cy="315" r="400" stroke="white" stroke-width="2" stroke-opacity="0.05"/>
+  
+  <!-- Card / Frame Container -->
+  <rect x="400" y="115" width="400" height="400" rx="40" fill="white" fill-opacity="0.1" stroke="white" stroke-width="4"/>
+  
+  <!-- Scanning Corners -->
+  <path d="M440 165H480M440 165V205" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+  <path d="M760 165H720M760 165V205" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+  <path d="M440 465H480M440 465V425" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+  <path d="M760 465H720M760 465V425" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Stylized Food Icon (Apple) -->
+  <g transform="translate(600 315)">
+    <path d="M-35 45C-65 45 -85 15 -85 -25C-85 -75 -45 -95 -25 -95C-5 -95 35 -75 35 -25C35 15 15 45 -35 45Z" fill="#FB923C"/>
+    <path d="M25 45C55 45 75 15 75 -25C75 -75 35 -95 15 -95C-5 -95 -45 -75 -45 -25C-45 15 -25 45 25 45Z" fill="#FB923C"/>
+    <path d="M-5 -95C-5 -115 15 -135 35 -135C35 -115 15 -95 -5 -95Z" fill="#34D399"/>
+  </g>
+  
+  <!-- AI Sparkles -->
+  <path d="M740 200L750 180L760 200L780 210L760 220L750 240L740 220L720 210L740 200Z" fill="#F5F3FF"/>
+  <path d="M460 420L465 410L470 420L480 425L470 430L465 440L460 430L450 425L460 420Z" fill="#F5F3FF"/>
+
+  <!-- Text -->
+  <text x="600" y="560" font-family="'Poppins', sans-serif" font-weight="bold" font-size="64" fill="white" text-anchor="middle" letter-spacing="2">DALILSCAN</text>
+  <text x="600" y="610" font-family="'Noto Sans Arabic', sans-serif" font-weight="bold" font-size="40" fill="#E5E7EB" text-anchor="middle">دليل سكان</text>
+
+  <!-- Scan Line -->
+  <rect x="420" y="310" width="360" height="4" fill="#34D399" fill-opacity="0.8">
+    <animate attributeName="y" values="160;460;160" dur="4s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="4s" repeatCount="indefinite" />
+  </rect>
+
+  <defs>
+    <linearGradient id="grad1" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4C1D95" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#7C3AED" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

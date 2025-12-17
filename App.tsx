@@ -24,7 +24,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Insights = lazy(() => import('./pages/Insights'));
 
 // A component to protect routes that require authentication
-const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { isAuthenticated } = useAuth();
     const location = useLocation();
 
